@@ -1,5 +1,3 @@
-async function fun(val) {
-    console.log(val * 56);
-};
-fun(78);
-console.log("hello world");
+let arr = [34, 67]
+const result = arr.includes(34)
+console.log(result);

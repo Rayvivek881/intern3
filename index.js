@@ -1,9 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const MONGO_URI = process.env.MONGO_URI;
-const dotenv = require('dotenv').config();
 const cors = require('cors');
 
 const PORT = process.env.PORT || 8080;
@@ -17,6 +17,7 @@ mongoose.connect('mongodb://localhost:27017/intern3', { useNewUrlParser: true, u
 //middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(cors());
 
 app.use('/api/hospital', require('./routes/Hospital'));
 app.use('/api/psychiatrist', require('./routes/Psychiatrist'))

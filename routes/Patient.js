@@ -3,13 +3,14 @@ const Hospital = require('../models/Hospital.js');
 const Psychiatrist = require('../models/Psychiatrist.js');
 const Patient = require('../models/Patient.js');
 const Phone = require('../models/phone.js');
+const Encrypt = require('../constant/encrypt.js')
 
 const RegisterPatient = async (req, res) => {
     try {
         const { Patient_name, email, country_code,
             phoneNumber, photo, PsychiatristID, password } = req.body;
         const result = await Psychiatrist.findById(PsychiatristID);
-        if (!result || (password != result.password)) {
+        if (!result || (Encrypt(password) != result.password)) {
             return res.status(400).json({ message: "Something went wrong" });
         }
         const phone = await Phone.create({
@@ -20,9 +21,9 @@ const RegisterPatient = async (req, res) => {
         });
         result.patients.push(NewPatient._id);
         await result.save();
-        await Hospital.updateOne({ _id : result.Hospital }, {
-            $inc : {
-                patients_count : 1
+        await Hospital.updateOne({ _id: result.Hospital }, {
+            $inc: {
+                patients_count: 1
             }
         })
         res.status(200).json({
@@ -34,7 +35,32 @@ const RegisterPatient = async (req, res) => {
     }
 }
 
+const DeletePatient = async (req, res) => {
+    try {
+        const { PsychiatristID, password } = req.body, { PatientID } = req.params;
+        const result = await Psychiatrist.findById(PsychiatristID);
+        if (!result || (Encrypt(password) != result.password) || !result.patients.includes(PatientID)) {
+            return res.status(400).json({ message: "Something went wrong" });
+        }
+        const patient = await Patient.deleteOne({ _id: PatientID }).populate('phone');
+        await Hospital.updateOne({ _id: result.Hospital }, {
+            $inc: {
+                patients_count: -1
+            }
+        })
+        await Psychiatrist.updateOne({ _id: PsychiatristID }, {
+            $pull: {
+                patients: PatientID
+            }
+        });
+        res.status(200).json({ ...patient });
+    } catch (err) {
+        res.status(400).json(arr);
+    }
+}
+
 
 Router.route('./create').post(RegisterPatient)
+Router.route('./delete/:PatientID').delete(DeletePatient);
 
 module.exports = Router;

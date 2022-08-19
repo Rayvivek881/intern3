@@ -1,14 +1,16 @@
 const Router = require('express').Router();
 const Hospital = require('../models/Hospital.js')
 const Psychiatrist = require('../models/Psychiatrist.js')
+const Encrypt = require('../constant/encrypt.js')
 
 const RegisterPsychiatrist = async (req, res) => {
     try {
         const {HospitalId, Psychiatrist_name, password} = req.body;
         const Newpsychiatrist = await Psychiatrist.create({
-            HospitalId, Psychiatrist_name, password
+            HospitalId, Psychiatrist_name,
+            password : Encrypt(password)
         });
-        const result = await Hospital.updateOne({_id : HospitalId}, {
+        await Hospital.updateOne({_id : HospitalId}, {
             $addToSet : {
                 Psychiatrists : Newpsychiatrist._id
             }

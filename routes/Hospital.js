@@ -1,6 +1,5 @@
 const Router = require('express').Router();
 const Hospital = require('../models/Hospital.js')
-const Psychiatrist = require('../models/Psychiatrist.js')
 
 const CreateNewHospital = async (req, res) => {
     try {
