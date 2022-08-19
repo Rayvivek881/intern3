@@ -9,7 +9,8 @@ const HospitalSchema = new mongoose.Schema({
         type : [{
             type : mongoose.Types.ObjectId,
             ref : 'Psychiatrist'
-        }]
+        }],
+        default : []
     },
     patients_count : {
         type : Number,

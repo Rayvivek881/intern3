@@ -9,15 +9,11 @@ const PatientsSchema = new mongoose.Schema({
         type : String,
         required : true
     },
-    name : {
-        type : String,
-        required : true
-    },
     phone : {
         type : mongoose.Types.ObjectId,
         ref : "phone"
     },
-    Psychiatrist : {
+    PsychiatristID : {
         type : mongoose.Types.ObjectId,
         ref  : "Psychiatrist"
     },
