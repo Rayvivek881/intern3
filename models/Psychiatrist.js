@@ -15,9 +15,10 @@ const PsychiatristSchema = new mongoose.Schema({
         type : String,
         required : true
     },
-    Hospital : {
+    HospitalID : {
         type : mongoose.Types.ObjectId,
-        ref : "Hospital"
+        ref : "Hospital",
+        required : "true"
     }
 }, { timestamps : true });
 

@@ -10,7 +10,9 @@ const RegisterPatient = async (req, res) => {
         const { Patient_name, email, country_code,
             phoneNumber, photo, PsychiatristID, password } = req.body;
         const result = await Psychiatrist.findById(PsychiatristID);
+        console.log(req.body);
         if (!result || (Encrypt(password) != result.password)) {
+            console.log(result.password, Encrypt(password));
             return res.status(400).json({ message: "Something went wrong" });
         }
         const phone = await Phone.create({
@@ -21,13 +23,13 @@ const RegisterPatient = async (req, res) => {
         });
         result.patients.push(NewPatient._id);
         await result.save();
-        await Hospital.updateOne({ _id: result.Hospital }, {
+        await Hospital.updateOne({ _id: result.HospitalID }, {
             $inc: {
                 patients_count: 1
             }
         })
         res.status(200).json({
-            ...NewPatient,
+            ...NewPatient._doc,
             message: `new patient ${Patient_name} Created`
         });
     } catch (err) {
@@ -43,7 +45,7 @@ const DeletePatient = async (req, res) => {
             return res.status(400).json({ message: "Something went wrong" });
         }
         const patient = await Patient.deleteOne({ _id: PatientID }).populate('phone');
-        await Hospital.updateOne({ _id: result.Hospital }, {
+        await Hospital.updateOne({ _id: result.HospitalID }, {
             $inc: {
                 patients_count: -1
             }
@@ -60,7 +62,7 @@ const DeletePatient = async (req, res) => {
 }
 
 
-Router.route('./create').post(RegisterPatient)
-Router.route('./delete/:PatientID').delete(DeletePatient);
+Router.route('/create').post(RegisterPatient)
+Router.route('/delete/:PatientID').delete(DeletePatient);
 
 module.exports = Router;

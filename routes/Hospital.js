@@ -7,7 +7,7 @@ const CreateNewHospital = async (req, res) => {
         const result = await Hospital.create({
             hospital_name
         });
-        res.status(200).json({...result});
+        res.status(200).json({...result._doc});
     } catch(err) {
         res.status(400).json(err);
     }
@@ -16,7 +16,7 @@ const CreateNewHospital = async (req, res) => {
 const UpdateHospital = async (req, res) => {
     try {
         const { hospital_name, id } = req.body;
-        const result = await Hospital.updateOne({_id : id}, {
+        const result = await Hospital.findByIdAndUpdate({_id : id}, {
             $set : {
                 hospital_name : hospital_name
             }
@@ -34,7 +34,7 @@ const Hospitaldetails = async (req, res) => {
         if (!Details) {
             return res.status(400).json({message : "HospitalID is Not valid"});
         }
-        res.status(200).json({...Details});
+        res.status(200).json({...Details._doc});
     } catch (err) {
         res.status(400).json(err);
     }

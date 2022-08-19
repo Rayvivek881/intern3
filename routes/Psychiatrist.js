@@ -5,18 +5,18 @@ const Encrypt = require('../constant/encrypt.js')
 
 const RegisterPsychiatrist = async (req, res) => {
     try {
-        const {HospitalId, Psychiatrist_name, password} = req.body;
+        const {HospitalID, Psychiatrist_name, password} = req.body;
         const Newpsychiatrist = await Psychiatrist.create({
-            HospitalId, Psychiatrist_name,
+            HospitalID, Psychiatrist_name,
             password : Encrypt(password)
         });
-        await Hospital.updateOne({_id : HospitalId}, {
+        await Hospital.updateOne({_id : HospitalID}, {
             $addToSet : {
                 Psychiatrists : Newpsychiatrist._id
             }
         })
         res.status(200).json({
-            ...Newpsychiatrist,
+            ...Newpsychiatrist._doc,
             message : "New psychiatrist created"
         });
     } catch (err) {
@@ -26,28 +26,29 @@ const RegisterPsychiatrist = async (req, res) => {
 
 const ChangeHospital = async (req, res) => {
     try {
-        const { HospitalId, psychiatristId } = req.params;
-        const psychiatrist = await Psychiatrist.findById(psychiatristId);
-        await Hospital.updateOne({_id : psychiatrist.Hospital}, {
+        const { HospitalID, psychiatristID } = req.params;
+        console.log(req.params);
+        const psychiatrist = await Psychiatrist.findById(psychiatristID);
+        await Hospital.updateOne({_id : psychiatrist.HospitalID}, {
             $pull : {
-                Psychiatrists : psychiatristId
+                Psychiatrists : psychiatristID
             },
             $inc : {
                 patients_count : -psychiatrist.patients.length
             }
         });
-        await Hospital.updateOne({_id : HospitalId}, {
+        await Hospital.updateOne({_id : HospitalID}, {
             $addToSet : {
-                Psychiatrists : psychiatristId
+                Psychiatrists : psychiatristID
             },
             $inc : {
                 patients_count : psychiatrist.patients.length
             }
         });
-        psychiatrist.Hospital = HospitalId;
+        psychiatrist.HospitalID = HospitalID;
         await psychiatrist.save();
         res.status(200).json({
-            ...psychiatrist,
+            ...psychiatrist._doc,
             message : "Hospital changed"
         });
     } catch (err) {
@@ -56,7 +57,7 @@ const ChangeHospital = async (req, res) => {
 };
 
 Router.route('/ragister').post(RegisterPsychiatrist);
-Router.route('/changeHospital/:HospitalId/:psychiatristId')
+Router.route('/changeHospital/:HospitalID/:psychiatristID')
     .patch(ChangeHospital)
 
 module.exports = Router;
