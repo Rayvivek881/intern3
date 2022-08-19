@@ -1,3 +1,2 @@
-let arr = [34, 67]
-const result = arr.includes(34)
-console.log(result);
+let val = "a9cd";
+console.log(val.charCodeAt(1));

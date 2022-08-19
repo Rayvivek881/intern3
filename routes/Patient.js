@@ -3,23 +3,22 @@ const Hospital = require('../models/Hospital.js');
 const Psychiatrist = require('../models/Psychiatrist.js');
 const Patient = require('../models/Patient.js');
 const Phone = require('../models/phone.js');
-const Encrypt = require('../constant/encrypt.js')
+const {Encrypt, passwordCheck, EmailCheck} = require('../constant/encrypt.js')
 
 const RegisterPatient = async (req, res) => {
     try {
-        const { Patient_name, email, country_code,
+        const { Patient_name, email, country_code, Address,
             phoneNumber, photo, PsychiatristID, password } = req.body;
         const result = await Psychiatrist.findById(PsychiatristID);
         console.log(req.body);
-        if (!result || (Encrypt(password) != result.password)) {
-            console.log(result.password, Encrypt(password));
+        if (!result || (Encrypt(password) != result.password) || phoneNumber.length < 10 || Address.length < 10) {
             return res.status(400).json({ message: "Something went wrong" });
         }
         const phone = await Phone.create({
             phoneNumber, country_code
         });
         const NewPatient = await Patient.create({
-            Patient_name, photo, email, phone, PsychiatristID
+            Patient_name, photo, email, phone, PsychiatristID, Address
         });
         result.patients.push(NewPatient._id);
         await result.save();

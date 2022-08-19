@@ -1,11 +1,14 @@
 const Router = require('express').Router();
 const Hospital = require('../models/Hospital.js')
 const Psychiatrist = require('../models/Psychiatrist.js')
-const Encrypt = require('../constant/encrypt.js')
+const {Encrypt, passwordCheck} = require('../constant/encrypt.js')
 
 const RegisterPsychiatrist = async (req, res) => {
     try {
         const {HospitalID, Psychiatrist_name, password} = req.body;
+        if (!passwordCheck(password)) {
+            return res.status(400).json({message : "weak password"});
+        }
         const Newpsychiatrist = await Psychiatrist.create({
             HospitalID, Psychiatrist_name,
             password : Encrypt(password)

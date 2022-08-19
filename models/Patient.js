@@ -9,6 +9,10 @@ const PatientsSchema = new mongoose.Schema({
         type : String,
         required : true
     },
+    Address : {
+        type : String,
+        required : true
+    },
     phone : {
         type : mongoose.Types.ObjectId,
         ref : "phone"
